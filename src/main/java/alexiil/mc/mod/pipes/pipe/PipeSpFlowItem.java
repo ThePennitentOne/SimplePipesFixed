@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
 
+import net.fabricmc.loader.impl.util.log.Log;
+import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -269,7 +271,20 @@ public class PipeSpFlowItem extends PipeSpFlow {
         dirs.remove(item.side);
         dirs.removeAll(item.tried);
         for (Direction dir : Direction.values()) {
-            if (!pipe.isConnected(dir) || pipe.getItemInsertable(dir) == null) {
+
+            int itemCount = 0;
+            if ( pipe.getNeighbourPipe(dir) != null) {
+                ISimplePipe nieghbour = pipe.getNeighbourPipe(dir);
+
+                NbtCompound contents = nieghbour.getFlow().toTag();
+                //Log.info(LogCategory.LOG, contents.asString());
+                NbtList itemList = contents.getList("items",10);
+                itemCount = itemList.size();
+               // Log.info(LogCategory.LOG, String.valueOf(itemCount));
+            }
+
+
+            if (!pipe.isConnected(dir) || pipe.getItemInsertable(dir) == null || itemCount > 32) {
                 dirs.remove(dir);
             }
         }
