@@ -269,7 +269,21 @@ public class PipeSpFlowItem extends PipeSpFlow {
         dirs.remove(item.side);
         dirs.removeAll(item.tried);
         for (Direction dir : Direction.values()) {
-            if (!pipe.isConnected(dir) || pipe.getItemInsertable(dir) == null) {
+
+
+            int itemCount = 0;
+            if ( pipe.getNeighbourPipe(dir) != null) {
+                ISimplePipe nieghbour = pipe.getNeighbourPipe(dir);
+
+                NbtCompound contents = nieghbour.getFlow().toTag();
+
+                NbtList itemList = contents.getList("items",10);
+                itemCount = itemList.size();
+
+            }
+
+
+            if (!pipe.isConnected(dir) || pipe.getItemInsertable(dir) == null || itemCount >= 32) {
                 dirs.remove(dir);
             }
         }
